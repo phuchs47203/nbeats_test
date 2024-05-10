@@ -134,4 +134,11 @@ class EPF:
         path = Path(directory) / 'epf' / 'datasets'
         if not path.exists():
             for group in EPFInfo.groups:
-                download_file(path, 'content/nbeats_test/src/utils/data/BIDV.csv')
+                #download_file(path, 'content/nbeats_test/src/utils/data/BIDV.csv')
+		source_path = "/data/BIDV.csv"
+
+		# Đường dẫn đích (nơi bạn muốn sao chép file)
+		destination_directory = "/data/epf/dataset/"
+
+		# Gọi hàm download_file để sao chép file
+		download_file(destination_directory, source_path)
