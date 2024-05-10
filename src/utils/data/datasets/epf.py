@@ -134,4 +134,4 @@ class EPF:
         path = Path(directory) / 'epf' / 'datasets'
         if not path.exists():
             for group in EPFInfo.groups:
-                download_file(path, SOURCE_URL + f'{group}.csv')
+                download_file(path, 'BIDV.csv')
