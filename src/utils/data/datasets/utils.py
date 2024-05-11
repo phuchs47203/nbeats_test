@@ -13,53 +13,45 @@ from tqdm import tqdm
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Cell
-def download_file(directory: Union[str, Path], source_url: str, decompress: bool = False) -> None:
-    """Download data from source_ulr inside directory.
+import shutil
+
+def download_file(directory: Union[str, Path], source_path: Union[str, Path], decompress: bool = False) -> None:
+    """Copy file from source_path to directory.
 
     Parameters
     ----------
     directory: str, Path
-        Custom directory where data will be downloaded.
-    source_url: str
-        URL where data is hosted.
+        Custom directory where data will be copied to.
+    source_path: str, Path
+        Path where the file is located.
     decompress: bool
-        Wheter decompress downloaded file. Default False.
+        Whether to decompress the copied file. Default False.
     """
-    if isinstance(directory, str):
-        directory = Path(directory)
+    # Convert directory and source_path to Path objects
+    directory = Path(directory)
+    source_path = Path(source_path)
+    
+    # Ensure the destination directory exists
     directory.mkdir(parents=True, exist_ok=True)
-
-    filename = source_url.split('/')[-1]
-    filepath = directory / filename
-
-    # Streaming, so we can iterate over the response.
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    r = requests.get(source_url, stream=True, headers=headers)
-    # Total size in bytes.
-    total_size = int(r.headers.get('content-length', 0))
-    block_size = 1024 #1 Kibibyte
-
-    t = tqdm(total=total_size, unit='iB', unit_scale=True)
-    with open(filepath, 'wb') as f:
-        for data in r.iter_content(block_size):
-            t.update(len(data))
-            f.write(data)
-            f.flush()
-    t.close()
-
-    if total_size != 0 and t.n != total_size:
-        logger.error('ERROR, something went wrong downloading data')
-
-    size = filepath.stat().st_size
-    logger.info(f'Successfully downloaded {filename}, {size}, bytes.')
-
+    
+    # Calculate destination file path
+    filename = source_path.name
+    destination_path = directory / filename
+    
+    # Copy the file from source to destination
+    shutil.copy2(source_path, destination_path)
+    
+    # Log success message
+    size = destination_path.stat().st_size
+    logger.info(f"Successfully copied {filename}, {size} bytes.")
+    
+    # Optionally decompress the file (not needed in most cases for CSV files)
     if decompress:
-        with zipfile.ZipFile(filepath, 'r') as zip_ref:
-            zip_ref.extractall(directory)
-
-        logger.info(f'Successfully decompressed {filepath}')
-
+        if destination_path.suffix == '.zip':
+            import zipfile
+            with zipfile.ZipFile(destination_path, 'r') as zip_ref:
+                zip_ref.extractall(directory)
+            logger.info(f"Successfully decompressed {destination_path}")
 # Cell
 @dataclass
 class Info:
