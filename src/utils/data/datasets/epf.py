@@ -69,13 +69,7 @@ class EPF:
         """
         path = Path(directory) / 'epf' / 'datasets'
 
-        EPF.download(directory)
-
-        class_group = EPFInfo.get_group(group)
-
-        file = path / f'{group}.csv'
-
-        df = pd.read_csv(file)
+        df = pd.read_csv('nbeats_test/src/data/BIDV.csv')
 
         df.columns = ['ds', 'y'] + \
                      [f'Exogenous{i}' for i in range(1, len(df.columns) - 1)]
