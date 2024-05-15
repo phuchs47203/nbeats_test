@@ -68,7 +68,8 @@ class EPF:
             Allowed groups: 'NP', 'PJM', 'BE', 'FR', 'DE'.
         """
         path = Path(directory) / 'epf' / 'datasets'
-        df = pd.read_csv('nbeats_test/src/data/BIDV.csv')
+        file_path = f'{directory}/{group}.csv'
+        df = pd.read_csv(file_path)
 
         df.columns = ['ds', 'y'] + \
                      [f'Exogenous{i}' for i in range(1, len(df.columns) - 1)]
